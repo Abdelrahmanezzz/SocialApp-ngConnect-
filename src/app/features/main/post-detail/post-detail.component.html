@@ -1,0 +1,339 @@
+<div class="mx-auto max-w-2xl px-4 py-6">
+  <!-- Back button -->
+  <button
+    type="button"
+    (click)="goBack()"
+    class="mb-4 flex items-center gap-2 text-sm font-bold text-[#666666] transition-all duration-200 hover:text-[#dd0031] cursor-pointer"
+  >
+    <i class="fa-solid fa-arrow-left"></i>
+    Back to Feed
+  </button>
+
+  <!-- Error -->
+  @if (errorMessage()) {
+    <div
+      class="mb-4 flex items-start gap-3 rounded-xl bg-rose-50/80 p-3.5 border border-rose-200/60"
+    >
+      <div
+        class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rose-100"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-rose-600"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </div>
+      <p class="text-xs font-semibold leading-relaxed text-rose-700">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  <!-- Post loading skeleton -->
+  @if (isLoadingPost()) {
+    <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white p-4">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 animate-pulse rounded-full bg-slate-100"></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-3 w-1/3 animate-pulse rounded-full bg-slate-100"></div>
+          <div class="h-3 w-1/4 animate-pulse rounded-full bg-slate-100"></div>
+        </div>
+      </div>
+      <div class="mt-4 space-y-2">
+        <div class="h-3 w-full animate-pulse rounded-full bg-slate-100"></div>
+        <div class="h-3 w-4/5 animate-pulse rounded-full bg-slate-100"></div>
+        <div class="h-3 w-3/5 animate-pulse rounded-full bg-slate-100"></div>
+      </div>
+      <div class="mt-4 h-64 animate-pulse rounded-xl bg-slate-100"></div>
+    </div>
+  }
+
+  <!-- Post -->
+  @if (!isLoadingPost() && post()) {
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-100">
+      <!-- Header -->
+      <div class="flex items-center gap-3 p-4">
+        <img
+          [src]="post()!.user.photo || '../../../../public/favicon.ico'"
+          [alt]="post()!.user.name"
+          title="post author"
+          class="h-11 w-11 shrink-0 rounded-full object-cover border border-slate-100"
+        />
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm font-extrabold text-[#1a1a1a]">{{ post()!.user.name }}</h3>
+          <p class="text-xs text-[#999999]">{{ post()!.createdAt | date: 'medium' }}</p>
+        </div>
+      </div>
+
+      <!-- Body -->
+      @if (post()!.body) {
+        <div class="px-4 pb-4">
+          <p class="text-sm leading-relaxed text-[#1a1a1a] whitespace-pre-wrap">
+            {{ post()!.body }}
+          </p>
+        </div>
+      }
+
+      <!-- Image -->
+      @if (post()!.image) {
+        <div class="w-full bg-slate-50 border-y border-slate-100">
+          <img
+            title="post"
+            [src]="post()!.image"
+            [alt]="'Post by ' + post()!.user.name"
+            class="max-h-125 w-full object-contain mx-auto"
+            loading="lazy"
+          />
+        </div>
+      }
+
+      <!-- Stats -->
+      <div
+        class="flex items-center justify-between px-4 py-2 text-xs text-[#999999] border-t border-slate-100"
+      >
+        <div class="flex items-center gap-1.5">
+          @if (post()!.likesCount > 0) {
+            <span
+              class="flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-br from-[#dd0031] to-[#c3002f] text-white"
+            >
+              <i class="fa-solid fa-heart text-[8px]"></i>
+            </span>
+            <span class="font-semibold">{{ post()!.likesCount }}</span>
+          }
+        </div>
+        <div class="font-semibold">
+          @if (post()!.commentsCount > 0) {
+            <span
+              >{{ post()!.commentsCount }}
+              {{ post()!.commentsCount === 1 ? 'comment' : 'comments' }}</span
+            >
+          }
+        </div>
+      </div>
+
+      <!-- Like action -->
+      <div class="px-4 py-2 border-t border-slate-100">
+        <button
+          type="button"
+          (click)="toggleLike()"
+          class="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all duration-200 hover:bg-slate-50 cursor-pointer"
+          [class.text-[#dd0031]]="post()!.isLiked"
+          [class.text-[#666666]]="!post()!.isLiked"
+        >
+          <i
+            class="fa-heart"
+            [class.fa-solid]="post()!.isLiked"
+            [class.fa-regular]="!post()!.isLiked"
+          ></i>
+          {{ post()!.isLiked ? 'Liked' : 'Like' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Comments section -->
+    <div class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-100">
+      <!-- Comment input -->
+      <div class="p-4 border-b border-slate-100">
+        <div class="flex gap-3">
+          <img
+            title="current user"
+            [src]="currentUser()?.photo || '../../../../public/favicon.ico'"
+            [alt]="currentUser()?.name"
+            class="h-9 w-9 shrink-0 rounded-full object-cover"
+          />
+          <div class="relative flex-1">
+            <input
+              type="text"
+              [(ngModel)]="newComment"
+              (keyup.enter)="addComment()"
+              placeholder="Write a comment..."
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-12 text-sm text-[#1a1a1a] outline-none transition-all duration-200 placeholder:text-[#aaaaaa] focus:bg-white focus:border-[#dd0031] focus:shadow-sm focus:shadow-[#dd0031]/10"
+            />
+            <button
+              type="button"
+              (click)="addComment()"
+              [disabled]="!newComment().trim() || isAddingComment()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#dd0031] transition-all duration-200 hover:text-[#c3002f] disabled:opacity-30 cursor-pointer"
+            >
+              @if (isAddingComment()) {
+                <svg
+                  class="h-4 w-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              } @else {
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments heading -->
+      <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+        <div class="h-5 w-0.5 rounded-full bg-[#dd0031]"></div>
+        <h2 class="text-sm font-extrabold text-[#1a1a1a]">
+          Comments
+          @if (post()!.commentsCount > 0) {
+            <span class="ml-1 text-xs font-semibold text-[#999999]"
+              >({{ post()!.commentsCount }})</span
+            >
+          }
+        </h2>
+      </div>
+
+      <!-- Comments loading -->
+      @if (isLoadingComments()) {
+        <div class="space-y-4 p-4">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <div class="flex gap-3">
+              <div class="h-9 w-9 animate-pulse rounded-full bg-slate-100"></div>
+              <div class="flex-1 space-y-2 rounded-2xl bg-slate-50 p-3">
+                <div class="h-3 w-1/4 animate-pulse rounded-full bg-slate-100"></div>
+                <div class="h-3 w-3/4 animate-pulse rounded-full bg-slate-100"></div>
+                <div class="h-3 w-1/2 animate-pulse rounded-full bg-slate-100"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Comments list -->
+      @if (!isLoadingComments()) {
+        <div class="divide-y divide-slate-50">
+          @if (comments().length === 0) {
+            <div class="p-12 text-center">
+              <div
+                class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 text-slate-300"
+              >
+                <i class="fa-regular fa-comment text-2xl"></i>
+              </div>
+              <p class="text-sm font-bold text-[#1a1a1a]">No comments yet</p>
+              <p class="mt-1 text-xs text-[#999999]">Be the first to comment!</p>
+            </div>
+          }
+
+          @for (comment of comments(); track comment._id) {
+            <div class="flex gap-3 p-4">
+              <img
+                title="commenter"
+                [src]="comment.commentCreator.photo || '../../../../public/favicon.ico'"
+                [alt]="comment.commentCreator.name"
+                class="h-9 w-9 shrink-0 rounded-full object-cover"
+              />
+              <div class="flex-1 min-w-0">
+                <div class="rounded-2xl bg-slate-50 p-3">
+                  <div class="flex items-center justify-between gap-2">
+                    <div>
+                      <span class="text-xs font-extrabold text-[#1a1a1a]">{{
+                        comment.commentCreator.name
+                      }}</span>
+                      <span class="ml-2 text-2xs text-[#999999]">{{
+                        comment.createdAt | date: 'short'
+                      }}</span>
+                    </div>
+
+                    <!-- Comment options -->
+                    @if (comment.commentCreator._id === currentUser()?._id) {
+                      <div class="relative shrink-0">
+                        <button
+                          title="toggle"
+                          type="button"
+                          (click)="toggleCommentOptions(comment._id)"
+                          class="flex h-6 w-6 items-center justify-center rounded-full text-[#999999] hover:bg-slate-200 cursor-pointer"
+                        >
+                          <i class="fa-solid fa-ellipsis text-xs"></i>
+                        </button>
+                        @if (activeCommentOptions() === comment._id) {
+                          <div
+                            class="absolute right-0 top-7 z-10 w-32 overflow-hidden rounded-xl bg-white shadow-lg border border-slate-100"
+                          >
+                            <button
+                              type="button"
+                              (click)="onEditComment(comment)"
+                              class="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold text-[#444444] hover:bg-slate-50 cursor-pointer"
+                            >
+                              <i class="fa-solid fa-pen text-2xs"></i>
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              (click)="onDeleteComment(comment._id)"
+                              class="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer"
+                            >
+                              <i class="fa-solid fa-trash-can text-2xs"></i>
+                              Delete
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Comment content or edit form -->
+                  @if (editingCommentId() === comment._id) {
+                    <div class="mt-2">
+                      <input
+                        title="edit"
+                        type="text"
+                        [(ngModel)]="editCommentContent"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-[#1a1a1a] outline-none focus:border-[#dd0031]"
+                      />
+                      <div class="mt-2 flex items-center gap-2">
+                        <button
+                          type="button"
+                          (click)="cancelEditComment()"
+                          class="rounded-lg border border-slate-200 px-3 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          (click)="saveEditComment(comment._id)"
+                          [disabled]="isUpdatingComment() || !editCommentContent().trim()"
+                          class="rounded-lg bg-linear-to-r from-[#dd0031] to-[#c3002f] px-3 py-1 text-xs font-bold text-white hover:brightness-110 disabled:opacity-50 cursor-pointer"
+                        >
+                          @if (isUpdatingComment()) {
+                            Saving...
+                          } @else {
+                            Save
+                          }
+                        </button>
+                      </div>
+                    </div>
+                  } @else {
+                    <p class="mt-1 text-sm text-[#444444] leading-relaxed">{{ comment.content }}</p>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

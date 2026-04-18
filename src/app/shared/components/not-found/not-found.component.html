@@ -1,0 +1,49 @@
+<div class="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+  <div class="w-full max-w-md text-center">
+    <!-- Icon -->
+    <div
+      class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-[#dd0031]/10 to-[#ff6b8a]/10"
+    >
+      <i class="fa-solid fa-compass-slash text-4xl text-[#dd0031]"></i>
+    </div>
+
+    <!-- 404 -->
+    <h1 class="text-8xl font-extrabold text-[#dd0031] leading-none">404</h1>
+
+    <!-- Accent line -->
+    <div
+      class="mx-auto my-4 h-1 w-16 rounded-full bg-linear-to-r from-[#dd0031] to-[#ff6b8a]"
+    ></div>
+
+    <!-- Message -->
+    <h2 class="text-2xl font-extrabold text-[#1a1a1a]">Page Not Found</h2>
+    <p class="mt-2 text-sm text-[#666666] leading-relaxed">
+      Oops! The page you're looking for doesn't exist. <br />
+      It might have been moved or deleted.
+    </p>
+
+    <!-- Buttons -->
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a
+        routerLink="/main/feed"
+        class="flex items-center gap-2 rounded-xl bg-linear-to-r from-[#dd0031] to-[#c3002f] px-6 py-2.5 text-sm font-extrabold text-white shadow-md shadow-[#dd0031]/20 transition-all duration-200 hover:shadow-lg hover:shadow-[#dd0031]/30 hover:brightness-110 active:scale-[0.98]"
+      >
+        <i class="fa-solid fa-house text-sm"></i>
+        Go Home
+      </a>
+      <button
+        type="button"
+        (click)="goBack()"
+        class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-extrabold text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] cursor-pointer"
+      >
+        <i class="fa-solid fa-arrow-left text-sm"></i>
+        Go Back
+      </button>
+    </div>
+
+    <!-- Branding -->
+    <p class="mt-10 text-xs text-[#999999]">
+      <span class="font-extrabold text-[#dd0031]">NgConnect</span> — Connect with the world
+    </p>
+  </div>
+</div>

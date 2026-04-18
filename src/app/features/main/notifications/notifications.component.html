@@ -1,0 +1,107 @@
+<div class="mx-auto max-w-2xl px-4 py-6">
+  <!-- Header -->
+  <div class="mb-6 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="h-7 w-1 rounded-full bg-linear-to-b from-[#dd0031] to-[#ff6b8a]"></div>
+      <h1 class="text-2xl font-extrabold text-[#1a1a1a]">Notifications</h1>
+    </div>
+    <button
+      (click)="markAllAsRead()"
+      class="text-sm font-bold text-[#dd0031] transition-all duration-200 hover:text-[#c3002f] hover:underline cursor-pointer"
+    >
+      Mark all as read
+    </button>
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (isLoading()) {
+    <div class="space-y-3">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <div class="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4">
+          <div class="h-12 w-12 animate-pulse rounded-full bg-slate-100"></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-3 w-3/4 animate-pulse rounded-full bg-slate-100"></div>
+            <div class="h-3 w-1/2 animate-pulse rounded-full bg-slate-100"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Notifications list -->
+  @if (!isLoading()) {
+    <div class="space-y-3">
+      @if (notifications().length === 0) {
+        <div class="rounded-2xl bg-white p-12 text-center border border-dashed border-slate-200">
+          <div
+            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-400"
+          >
+            <i class="fa-solid fa-bell-slash text-2xl"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-[#1a1a1a]">All caught up!</h3>
+          <p class="mt-1 text-sm text-[#666666]">No new notifications for you right now.</p>
+        </div>
+      }
+
+      @for (notification of notifications(); track notification._id) {
+        <div
+          (click)="!notification.isRead && markAsRead(notification._id)"
+          class="flex items-center gap-4 rounded-2xl border bg-white p-4 transition-all duration-200 hover:bg-slate-50/80 cursor-pointer"
+          [class.border-[#f4c7d4]]="!notification.isRead"
+          [class.bg-rose-50/30]="!notification.isRead"
+          [class.border-slate-100]="notification.isRead"
+        >
+          <!-- Avatar -->
+          <div class="relative shrink-0">
+            <img
+              title="Notification from {{ notification.sender.name }}"
+              [src]="notification.sender.photo || '../../../../../public/favicon.ico'"
+              [alt]="notification.sender.name"
+              class="h-12 w-12 rounded-full object-cover"
+            />
+            @if (!notification.isRead) {
+              <span
+                class="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-[#dd0031]"
+              ></span>
+            }
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-[#444444] leading-relaxed">
+              <span class="font-extrabold text-[#1a1a1a]">{{ notification.sender.name }}</span>
+              @switch (notification.type) {
+                @case ('like') {
+                  liked your post.
+                }
+                @case ('comment') {
+                  commented on your post.
+                }
+                @case ('follow') {
+                  started following you.
+                }
+                @case ('mention') {
+                  mentioned you in a post.
+                }
+                @case ('reply') {
+                  replied to your comment.
+                }
+                @default {
+                  interacted with your content.
+                }
+              }
+            </p>
+            <p class="mt-1 text-xs text-[#999999]">{{ notification.createdAt | date: 'short' }}</p>
+          </div>
+
+          <!-- Unread indicator -->
+          @if (!notification.isRead) {
+            <div class="shrink-0">
+              <span class="inline-block h-2 w-2 rounded-full bg-[#dd0031]"></span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

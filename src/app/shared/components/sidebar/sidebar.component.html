@@ -1,0 +1,143 @@
+<!-- Desktop Sidebar -->
+<aside
+  class="fixed left-0 top-0 z-50 hidden h-screen w-64 border-r border-slate-100 bg-white lg:block"
+>
+  <!-- Logo -->
+  <div class="flex h-16 items-center px-6">
+    <h1 class="text-2xl font-extrabold text-[#dd0031]">NgConnect</h1>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="mt-2 space-y-1 px-3">
+    <a
+      routerLink="/main/feed"
+      routerLinkActive="bg-[#dd0031]/5 text-[#dd0031]"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#666666] transition-all duration-200 hover:bg-slate-50 hover:text-[#1a1a1a]"
+    >
+      <i class="fa-solid fa-house w-5 text-center"></i>
+      Home
+    </a>
+    <a
+      routerLink="/main/notifications"
+      routerLinkActive="bg-[#dd0031]/5 text-[#dd0031]"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#666666] transition-all duration-200 hover:bg-slate-50 hover:text-[#1a1a1a]"
+    >
+      <i class="fa-solid fa-bell w-5 text-center"></i>
+      Notifications
+      @if (unreadCount() > 0) {
+        <span
+          class="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-[#dd0031] px-1.5 text-2xs font-extrabold text-white"
+        >
+          {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+        </span>
+      }
+    </a>
+    <a
+      routerLink="/main/profile"
+      routerLinkActive="bg-[#dd0031]/5 text-[#dd0031]"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#666666] transition-all duration-200 hover:bg-slate-50 hover:text-[#1a1a1a]"
+    >
+      <i class="fa-solid fa-user w-5 text-center"></i>
+      Profile
+    </a>
+    <a
+      routerLink="/main/change-password"
+      routerLinkActive="bg-[#dd0031]/5 text-[#dd0031]"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#666666] transition-all duration-200 hover:bg-slate-50 hover:text-[#1a1a1a]"
+    >
+      <i class="fa-solid fa-gear w-5 text-center"></i>
+      Settings
+    </a>
+  </nav>
+
+  <!-- Bottom section -->
+  <div class="absolute bottom-0 left-0 right-0 p-3">
+    <!-- Divider -->
+    <div class="mb-3 h-px w-full bg-linear-to-r from-slate-100 via-slate-200 to-slate-100"></div>
+
+    <!-- User card -->
+    <div class="mb-2 flex items-center gap-3 rounded-2xl bg-slate-50/80 p-3">
+      <img
+        title="{{ currentUser()?.name }}"
+        [src]="currentUser()?.photo || '../../../../../public/favicon.ico'"
+        [alt]="currentUser()?.name"
+        class="h-10 w-10 shrink-0 rounded-full object-cover border border-slate-200"
+      />
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-sm font-extrabold text-[#1a1a1a]">{{ currentUser()?.name }}</p>
+        <p class="truncate text-xs text-[#999999]">&#64;{{ currentUser()?.username }}</p>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <button
+      type="button"
+      (click)="logout()"
+      class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-rose-600 transition-all duration-200 hover:bg-rose-50 cursor-pointer"
+    >
+      <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- Mobile Bottom Nav -->
+<nav
+  class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-100 bg-white/90 backdrop-blur-md px-2 py-2 lg:hidden"
+>
+  <div class="flex items-center justify-around">
+    <a
+      routerLink="/main/feed"
+      routerLinkActive="text-[#dd0031]"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex flex-col items-center gap-0.5 px-3 py-1 text-[#999999] transition-all duration-200"
+    >
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-2xs font-bold">Home</span>
+    </a>
+
+    <a
+      routerLink="/main/notifications"
+      routerLinkActive="text-[#dd0031]"
+      class="relative flex flex-col items-center gap-0.5 px-3 py-1 text-[#999999] transition-all duration-200"
+    >
+      <i class="fa-solid fa-bell text-lg"></i>
+      <span class="text-2xs font-bold">Alerts</span>
+      @if (unreadCount() > 0) {
+        <span
+          class="absolute -right-0.5 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#dd0031] px-1 text-[9px] font-extrabold text-white"
+        >
+          {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+        </span>
+      }
+    </a>
+
+    <a
+      routerLink="/main/profile"
+      routerLinkActive="text-[#dd0031]"
+      class="flex flex-col items-center gap-0.5 px-3 py-1 text-[#999999] transition-all duration-200"
+    >
+      <i class="fa-solid fa-user text-lg"></i>
+      <span class="text-2xs font-bold">Profile</span>
+    </a>
+
+    <a
+      routerLink="/main/change-password"
+      routerLinkActive="text-[#dd0031]"
+      class="flex flex-col items-center gap-0.5 px-3 py-1 text-[#999999] transition-all duration-200"
+    >
+      <i class="fa-solid fa-gear text-lg"></i>
+      <span class="text-2xs font-bold">Settings</span>
+    </a>
+
+    <button
+      type="button"
+      (click)="logout()"
+      class="flex flex-col items-center gap-0.5 px-3 py-1 text-[#999999] transition-all duration-200 hover:text-rose-600 cursor-pointer"
+    >
+      <i class="fa-solid fa-right-from-bracket text-lg"></i>
+      <span class="text-2xs font-bold">Logout</span>
+    </button>
+  </div>
+</nav>

@@ -1,0 +1,140 @@
+<div class="mx-auto max-w-2xl px-4 py-6">
+  <!-- Create Post -->
+  <div class="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-100">
+    <div class="h-1 w-full bg-linear-to-r from-[#dd0031] via-[#ff6b8a] to-[#c3002f]"></div>
+    <div class="p-4">
+      <div class="flex gap-3">
+        <!-- Avatar -->
+        <img
+          title="Post from {{ currentUser()?.name }}"
+          [src]="currentUser()?.photo || '../../../../../public/favicon.ico'"
+          [alt]="currentUser()?.name"
+          class="h-10 w-10 shrink-0 rounded-full object-cover"
+        />
+
+        <!-- Input area -->
+        <div class="flex-1 min-w-0">
+          <textarea
+            [(ngModel)]="newPostBody"
+            placeholder="What's on your mind?"
+            class="w-full resize-none bg-transparent py-2 text-sm text-[#1a1a1a] outline-none placeholder:text-[#aaaaaa]"
+            rows="3"
+          ></textarea>
+
+          <!-- Image preview -->
+          @if (selectedFile) {
+            <div
+              class="relative mt-2 inline-flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 border border-slate-200"
+            >
+              <i class="fa-solid fa-image text-[#dd0031] text-sm"></i>
+              <span class="text-xs font-semibold text-[#444444] max-w-50 truncate">
+                {{ selectedFile.name }}
+              </span>
+              <button
+              title="remove"
+                type="button"
+                (click)="removeFile()"
+                class="ml-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-600 transition hover:bg-rose-100 hover:text-rose-600 cursor-pointer"
+              >
+                <i class="fa-solid fa-xmark text-xs"></i>
+              </button>
+            </div>
+          }
+
+          <!-- Actions -->
+          <div class="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+            <label
+              class="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-[#666666] transition-all duration-200 hover:bg-slate-50 hover:text-[#dd0031]"
+            >
+              <i class="fa-solid fa-image text-sm"></i>
+              <span class="text-sm font-semibold">Photo</span>
+              <input
+                type="file"
+                class="hidden"
+                (change)="onFileSelected($event)"
+                accept="image/*"
+              />
+            </label>
+
+            <button
+              type="button"
+              (click)="createPost()"
+              [disabled]="isPosting() || (!newPostBody().trim() && !selectedFile)"
+              class="flex items-center gap-2 rounded-xl bg-linear-to-r from-[#dd0031] to-[#c3002f] px-6 py-2 text-sm font-extrabold text-white shadow-md shadow-[#dd0031]/20 transition-all duration-200 hover:shadow-lg hover:shadow-[#dd0031]/30 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100 cursor-pointer"
+            >
+              @if (isPosting()) {
+                <svg
+                  class="h-4 w-4 animate-spin text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Posting...
+              } @else {
+                Post
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (isLoading()) {
+    <div class="space-y-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white p-4">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 animate-pulse rounded-full bg-slate-100"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3 w-1/3 animate-pulse rounded-full bg-slate-100"></div>
+              <div class="h-3 w-1/4 animate-pulse rounded-full bg-slate-100"></div>
+            </div>
+          </div>
+          <div class="mt-4 space-y-2">
+            <div class="h-3 w-full animate-pulse rounded-full bg-slate-100"></div>
+            <div class="h-3 w-4/5 animate-pulse rounded-full bg-slate-100"></div>
+            <div class="h-3 w-3/5 animate-pulse rounded-full bg-slate-100"></div>
+          </div>
+          <div class="mt-4 h-48 animate-pulse rounded-xl bg-slate-100"></div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Posts list -->
+  @if (!isLoading()) {
+    <div class="space-y-4">
+      @if (posts().length === 0) {
+        <div class="rounded-2xl bg-white p-12 text-center border border-dashed border-slate-200">
+          <div
+            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-400"
+          >
+            <i class="fa-solid fa-rss text-2xl"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-[#1a1a1a]">No posts yet</h3>
+          <p class="mt-1 text-sm text-[#666666]">Follow people to see their posts here!</p>
+        </div>
+      }
+
+      @for (post of posts(); track post._id) {
+        <app-post [post]="post" [currentUser]="currentUser()"></app-post>
+      }
+    </div>
+  }
+</div>
